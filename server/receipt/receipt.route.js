@@ -18,7 +18,11 @@ const router = express.Router(); // eslint-disable-line new-cap
 
 router.route('/')
   .get(receiptController.list)
-  .post(upload.single('image'), receiptController.ocr);
+  .post(
+    upload.single('image'), 
+    receiptController.ocr,
+    receiptController.categorize,
+    receiptController.create);
 
 router.route('/:id')
   .get(receiptController.get)

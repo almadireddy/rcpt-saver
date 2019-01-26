@@ -4,7 +4,8 @@ const retry = require('async-retry')
 const FormData = require('form-data');
 const fs = require('fs');
 
-const tabScannerKey = 'U5jZ8RTD2aVSnvUE6CFW2fH8o2k4MXSXTqV18ZisMsQspeeQiroagslb74OpKCIO'
+const tabScannerKey = 'U5jZ8RTD2aVSnvUE6CFW2fH8o2k4MXSXTqV18ZisMsQspeeQiroagslb74OpKCIO';
+const categorizerURL = 'https://rcpt-categories.herokuapp.com/api'
 /**
  * Load receipt and append to req.
  */
@@ -30,10 +31,6 @@ async function ocr(req, res, next) {
   const formData = new FormData();
   formData.append('image', fs.createReadStream(imagePath, {autoClose: false}));
   
-  const headers = new fetch.Headers({
-    'Content-Type': 'multipart/form-data; boundary=----thisisaboundary'
-  });
-  
   let ocr = await fetch(`https://api.tabscanner.com/${tabScannerKey}/process`, {
     method: 'POST',
     body: formData
@@ -52,8 +49,33 @@ async function ocr(req, res, next) {
     })
     const data = await res.json()
     if (data.status_code !== 3) throw "this aint it chief";
+    if (data.code >= 400) bail(new Error('failure'))
     return data;
   })
+  contents = contents.result;
+
+  res.locals.business = contents.establishment;
+  res.locals.subtotal = contents.subtotal;
+  res.locals.date = contents.date;
+  res.locals.total = contents.total;
+  res.locals.listItems = contents.listItems;
+  res.locals.taxPaid = contents.tax;
+  res.locals.address = contents.address;
+
+  next()
+}
+
+async function categorize(req, res, next) {
+  let address = res.locals.business;
+  let result = await fetch(`${categorizerURL}?address=${address}`, {
+    method: 'GET'
+  });
+  result = await result.json();
+  res.locals.categories = result.categories;
+
+  console.log('in categorize');
+  console.log(res.locals.categories)
+  next()
 }
 
 /**
@@ -66,10 +88,12 @@ async function create(req, res, next) {
   // First, make OCR request to parse image
   // Then, Get business, line items, make request with those to categorizer
   // then, put everything inside Reciept object and call .save()
+  console.log('in create')
+  console.log(res.locals.business)
 
-  receipt.save()
-    .then(savedReceipt => res.json(savedReceipt))
-    .catch(e => next(e));
+  // receipt.save()
+  //   .then(savedReceipt => res.json(savedReceipt))
+  //   .catch(e => next(e));
 }
 
 /**
@@ -112,4 +136,4 @@ function remove(req, res, next) {
     .catch(e => next(e));
 }
 
-module.exports = { load, get, create, update, list, remove, ocr };
+module.exports = { load, get, create, update, list, remove, ocr, categorize };
