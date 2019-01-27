@@ -96,9 +96,11 @@ async function create(req, res, next) {
   receipt.listItems = res.locals.listItems;
   receipt.taxPaid = res.locals.taxPaid;
   receipt.date = res.locals.date;
-  res.locals.categories.forEach(i => {
-    receipt.categories.push({name: i})
-  })
+  if (!!res.locals.categories) {
+    res.locals.categories.forEach(i => {
+      receipt.categories.push({name: i})
+    })
+  }
 
   try {
     let saved = await receipt.save();
