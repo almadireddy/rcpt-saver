@@ -13,7 +13,12 @@ const storage = multer.diskStorage({
   }
 })
 
-const upload = multer({ storage: storage, limits: { fieldSize: 25 * 1024 * 1024 } })
+const upload = multer({ storage: storage, 
+  limits: { 
+    fieldSize: 30 * 1024 * 1024,
+    fileSize: 30 * 1024 * 1024,
+  } 
+})
 const router = express.Router(); // eslint-disable-line new-cap
 
 router.route('/')
