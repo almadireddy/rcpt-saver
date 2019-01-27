@@ -26,5 +26,12 @@ module.exports = {
       username: Joi.string().required(),
       password: Joi.string().required()
     }
+  },
+
+  createReceipt: {
+    body: {
+      totalCost: Joi.string().required(),
+      business: Joi.string().required()
+    }
   }
 };
