@@ -19,20 +19,17 @@ const ReceiptSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  image: { 
-    data: Buffer, contentType: String
-  },
-  subtotal: Number,
-  tax: Number,
-  totalCost: Number,
-  taxRate: Number,
+  image: String,
   business: String,
+  subtotal: Number,
+  totalCost: Number,
+  listItems: [LineItemSchema],
+  taxPaid: Number,
   date: {
     type: Date,
     default: Date.now
   },
-  category: String,
-  listItems: [LineItemSchema]
+  categories: [new mongoose.Schema({name: String})]
 });
 
 /**

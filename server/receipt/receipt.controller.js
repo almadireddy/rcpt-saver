@@ -60,21 +60,17 @@ async function ocr(req, res, next) {
   res.locals.total = contents.total;
   res.locals.listItems = contents.listItems;
   res.locals.taxPaid = contents.tax;
-  res.locals.address = contents.address;
 
   next()
 }
 
 async function categorize(req, res, next) {
-  let address = res.locals.business;
-  let result = await fetch(`${categorizerURL}?address=${address}`, {
+  let business = res.locals.business;
+  let result = await fetch(`${categorizerURL}?business=${business}`, {
     method: 'GET'
   });
   result = await result.json();
   res.locals.categories = result.categories;
-
-  console.log('in categorize');
-  console.log(res.locals.categories)
   next()
 }
 
@@ -85,15 +81,24 @@ async function categorize(req, res, next) {
  * @returns {Receipt}
  */
 async function create(req, res, next) {
-  // First, make OCR request to parse image
-  // Then, Get business, line items, make request with those to categorizer
-  // then, put everything inside Reciept object and call .save()
-  console.log('in create')
-  console.log(res.locals.business)
+  let receipt = new Receipt();
+  receipt.image = req.file.path;
+  receipt.business = res.locals.business;
+  receipt.subtotal = res.locals.subtotal;
+  receipt.totalCost = res.locals.total;
+  receipt.listItems = res.locals.listItems;
+  receipt.taxPaid = res.locals.taxPaid;
+  receipt.date = res.locals.date;
+  res.locals.categories.forEach(i => {
+    receipt.categories.push({name: i})
+  })
 
-  // receipt.save()
-  //   .then(savedReceipt => res.json(savedReceipt))
-  //   .catch(e => next(e));
+  try {
+    let saved = await receipt.save();
+    await res.json(saved);
+  } catch (e) {
+    next(e)
+  }
 }
 
 /**
