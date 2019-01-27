@@ -139,7 +139,7 @@ function list(req, res, next) {
  * @returns {Receipt}
  */
 function remove(req, res, next) {
-  Receipt.findByIdAndDelete(req.params.id)
+  Receipt.deleteOne({_id: req.params.id})
 }
 
 module.exports = { load, get, create, update, list, remove, ocr, categorize };
