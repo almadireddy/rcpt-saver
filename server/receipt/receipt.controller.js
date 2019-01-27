@@ -4,7 +4,7 @@ const retry = require('async-retry')
 const FormData = require('form-data');
 const fs = require('fs');
 
-const tabScannerKey = 'U5jZ8RTD2aVSnvUE6CFW2fH8o2k4MXSXTqV18ZisMsQspeeQiroagslb74OpKCIO';
+const tabScannerKey = 'WtFkbd9wE9kStLMxAIzcDZUfUs46GnsxiD9c06pHoddNHspQj8RoLmyScemb4Pov';
 const categorizerURL = 'https://rcpt-categories.herokuapp.com/api'
 /**
  * Load receipt and append to req.
