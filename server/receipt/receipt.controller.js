@@ -30,13 +30,16 @@ async function ocr(req, res, next) {
   let imagePath = req.file.path;
   const formData = new FormData();
   formData.append('image', fs.createReadStream(imagePath, {autoClose: false}));
-  
+  console.log('in ocr')
   let ocr = await fetch(`https://api.tabscanner.com/${tabScannerKey}/process`, {
     method: 'POST',
     body: formData
   });
 
+  console.log("past ocr")
   ocr = await ocr.json()
+  
+  console.log(ocr)
 
   if (ocr.code >= 400) {
     throw new Error("Something went wrong with the image");
