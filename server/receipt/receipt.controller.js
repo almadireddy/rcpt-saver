@@ -66,11 +66,15 @@ async function ocr(req, res, next) {
 
 async function categorize(req, res, next) {
   let business = res.locals.business;
-  let result = await fetch(`${categorizerURL}?business=${business}`, {
-    method: 'GET'
-  });
-  result = await result.json();
-  res.locals.categories = result.categories;
+  try {
+    let result = await fetch(`${categorizerURL}?business=${business}`, {
+      method: 'GET'
+    });
+    result = await result.json();
+    res.locals.categories = result.categories;
+  } catch(e) {
+    next(e)
+  }
   next()
 }
 

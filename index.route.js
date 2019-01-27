@@ -1,8 +1,7 @@
 const express = require('express');
 const userRoutes = require('./server/user/user.route');
-const authRoutes = require('./server/auth/auth.route');
 const receiptRoutes = require('./server/receipt/receipt.route');
-
+const imageRoutes = require('./server/image/image.route');
 const router = express.Router(); // eslint-disable-line new-cap
 
 // TODO: use glob to match *.route files
@@ -15,5 +14,6 @@ router.get('/health-check', (req, res) =>
 // mount user routes at /users
 router.use('/users', userRoutes);
 router.use('/receipts', receiptRoutes);
+router.use('/', imageRoutes)
 
 module.exports = router;
